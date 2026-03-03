@@ -2,6 +2,8 @@
 
 Automatic image sharpening filter based on Prewitt gradient and Retinex-inspired contrast — no manual tuning required.
 
+Tool: https://smartedge.onrender.com
+
 ## What It Does
 
 Makes blurry or poorly-lit images sharper by enhancing edges while preserving natural appearance.
@@ -88,12 +90,3 @@ SmartEdge/
 ├── requirements.txt       # Python dependencies
 └── README.md
 ```
-
-## Deploy on Render
-
-1. Push to GitHub
-2. Go to [render.com](https://render.com) → **New** → **Web Service**
-3. Connect your repo and set:
-   - **Build Command:** `pip install -r requirements.txt`
-   - **Start Command:** `gunicorn app:app --bind 0.0.0.0:$PORT`
-4. Deploy (free tier available)
