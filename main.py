@@ -35,6 +35,18 @@ def parse_args(argv):
         action="store_true",
         help="Keep small isolated components in R.",
     )
+    p.add_argument(
+        "--adaptive",
+        action="store_true",
+        help="Use spatially-adaptive c map (block-level). Addresses the paper's "
+             "limitation of uniform sharpening strength across mixed-blur images.",
+    )
+    p.add_argument(
+        "--block-size",
+        type=int,
+        default=64,
+        help="Block size in pixels for --adaptive mode (default: 64).",
+    )
     return p.parse_args(argv)
 
 
@@ -52,6 +64,8 @@ def main(argv):
         post_median=not args.no_post_median,
         remove_outliers=not args.keep_outliers,
         remove_small=not args.keep_small,
+        adaptive=args.adaptive,
+        block_size=args.block_size,
     )
     save_image(out_path, out, "gray" if mode == "gray" else "bgr")
     return 0

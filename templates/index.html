@@ -216,6 +216,13 @@
               <input type="radio" name="alpha" value="auto" id="aa"><label for="aa">auto</label>
             </div>
           </div>
+          <div class="param-group">
+            <span>Mode</span>
+            <div class="radio-group">
+              <input type="radio" name="adaptive" value="false" id="mglobal" checked><label for="mglobal">Global</label>
+              <input type="radio" name="adaptive" value="true" id="madaptive"><label for="madaptive">Adaptive</label>
+            </div>
+          </div>
           <button type="submit" class="btn-sharpen" id="submitBtn">Sharpen</button>
         </div>
       </div>
@@ -224,25 +231,39 @@
     <div id="results" class="hidden">
       <div class="card">
         <div class="card-title">Result</div>
-        <div class="images-row">
+        <div class="images-row" id="imagesRow">
           <div class="img-box">
             <span>Original</span>
             <img id="imgBefore" src="" alt="Original">
           </div>
           <div class="img-box">
-            <span>Sharpened</span>
+            <span id="labelSharpened">Sharpened</span>
             <img id="imgAfter" src="" alt="Sharpened">
+          </div>
+          <div class="img-box hidden" id="adaptiveBox">
+            <span>Adaptive</span>
+            <img id="imgAdaptive" src="" alt="Adaptive">
           </div>
         </div>
       </div>
 
       <div class="card">
-        <div class="card-title">Evaluation Metrics</div>
+        <div class="card-title" id="metricsTitle">Evaluation Metrics</div>
         <table>
           <thead>
             <tr><th>Metric</th><th>Before</th><th>After</th><th>Change</th><th>Expected</th><th>Result</th></tr>
           </thead>
           <tbody id="metricsBody"></tbody>
+        </table>
+      </div>
+
+      <div class="card hidden" id="metricsAdaptiveCard">
+        <div class="card-title">Evaluation Metrics — Adaptive</div>
+        <table>
+          <thead>
+            <tr><th>Metric</th><th>Before</th><th>After</th><th>Change</th><th>Expected</th><th>Result</th></tr>
+          </thead>
+          <tbody id="metricsBodyAdaptive"></tbody>
         </table>
       </div>
     </div>
@@ -252,12 +273,27 @@
     const form = document.getElementById('form');
     const btn = document.getElementById('submitBtn');
 
+    function fillMetricsTable(tbodyId, rows) {
+      const tbody = document.getElementById(tbodyId);
+      tbody.innerHTML = '';
+      rows.forEach(row => {
+        const cls = row[5] === 'PASS' ? 'pass' : 'fail';
+        tbody.innerHTML += `<tr>
+          <td><strong>${row[0]}</strong></td>
+          <td>${row[1]}</td><td>${row[2]}</td><td>${row[3]}</td>
+          <td>${row[4]}</td><td class="${cls}">${row[5]}</td>
+        </tr>`;
+      });
+    }
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner"></span>Processing...';
 
       const fd = new FormData(form);
+      const isAdaptive = fd.get('adaptive') === 'true';
+
       try {
         const resp = await fetch('/sharpen', { method: 'POST', body: fd });
         const data = await resp.json();
@@ -266,17 +302,21 @@
         document.getElementById('imgBefore').src = 'data:image/png;base64,' + data.original;
         document.getElementById('imgAfter').src = 'data:image/png;base64,' + data.sharpened;
 
-        const tbody = document.getElementById('metricsBody');
-        tbody.innerHTML = '';
-        data.metrics.forEach(row => {
-          const cls = row[5] === 'PASS' ? 'pass' : 'fail';
-          tbody.innerHTML += `<tr>
-            <td><strong>${row[0]}</strong></td>
-            <td>${row[1]}</td><td>${row[2]}</td><td>${row[3]}</td>
-            <td>${row[4]}</td><td class="${cls}">${row[5]}</td>
-          </tr>`;
-        });
+        if (isAdaptive && data.sharpened_adaptive) {
+          document.getElementById('labelSharpened').textContent = 'Global (uniform c)';
+          document.getElementById('imgAdaptive').src = 'data:image/png;base64,' + data.sharpened_adaptive;
+          document.getElementById('adaptiveBox').classList.remove('hidden');
+          document.getElementById('metricsTitle').textContent = 'Evaluation Metrics — Global (uniform c)';
+          document.getElementById('metricsAdaptiveCard').classList.remove('hidden');
+          fillMetricsTable('metricsBodyAdaptive', data.metrics_adaptive);
+        } else {
+          document.getElementById('labelSharpened').textContent = 'Sharpened';
+          document.getElementById('adaptiveBox').classList.add('hidden');
+          document.getElementById('metricsTitle').textContent = 'Evaluation Metrics';
+          document.getElementById('metricsAdaptiveCard').classList.add('hidden');
+        }
 
+        fillMetricsTable('metricsBody', data.metrics);
         document.getElementById('results').classList.remove('hidden');
       } catch (err) {
         alert('Error: ' + err.message);

@@ -50,29 +50,44 @@ def sharpen():
 
     w = int(request.form.get('w', 3))
     alpha_mode = request.form.get('alpha', '1')
+    use_adaptive = request.form.get('adaptive', 'false').lower() == 'true'
+    block_size = int(request.form.get('block_size', 64))
 
     before = evaluate(bgr, reference=ref_bgr)
-    sharpened = smartedge_sharpen(bgr, w=w, alpha_mode=alpha_mode)
-    after = evaluate(sharpened, reference=ref_bgr)
+    sharpened_global = smartedge_sharpen(bgr, w=w, alpha_mode=alpha_mode)
+    after_global = evaluate(sharpened_global, reference=ref_bgr)
 
     metric_keys = ["Pm", "mu", "Lm", "NIQE"]
     if ref_bgr is not None:
         metric_keys += ["PSNR", "SSIM"]
 
-    rows = []
-    for key in metric_keys:
-        if key not in before:
-            continue
-        b = before[key]
-        a = after[key]
-        change, result = _arrow(b, a, EXPECTED[key], key=key)
-        rows.append([key, f"{b:.4f}", f"{a:.4f}", change, EXPECTED[key], result])
+    def _make_rows(before_dict, after_dict):
+        rows = []
+        for key in metric_keys:
+            if key not in before_dict:
+                continue
+            b = before_dict[key]
+            a = after_dict[key]
+            change, result = _arrow(b, a, EXPECTED[key], key=key)
+            rows.append([key, f"{b:.4f}", f"{a:.4f}", change, EXPECTED[key], result])
+        return rows
 
-    return jsonify(
+    response = dict(
         original=_to_base64_png(bgr),
-        sharpened=_to_base64_png(sharpened),
-        metrics=rows,
+        sharpened=_to_base64_png(sharpened_global),
+        metrics=_make_rows(before, after_global),
     )
+
+    if use_adaptive:
+        sharpened_adaptive = smartedge_sharpen(
+            bgr, w=w, alpha_mode=alpha_mode,
+            adaptive=True, block_size=block_size,
+        )
+        after_adaptive = evaluate(sharpened_adaptive, reference=ref_bgr)
+        response['sharpened_adaptive'] = _to_base64_png(sharpened_adaptive)
+        response['metrics_adaptive'] = _make_rows(before, after_adaptive)
+
+    return jsonify(**response)
 
 
 if __name__ == '__main__':
