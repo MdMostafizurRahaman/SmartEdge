@@ -1,8 +1,7 @@
 import numpy as np
 
 from contrast import retinex_contrast
-from prewitt_gradient import prewitt_gradient
-
+from prewitt_gradient import sobel_gradient
 
 def remove_small_components(mask, min_size=6):
     h, w = mask.shape
@@ -30,8 +29,11 @@ def remove_small_components(mask, min_size=6):
     return out
 
 
-def compute_c(l_smooth, w, epsilon, remove_outliers=True, remove_small=True):
-    g = prewitt_gradient(l_smooth)
+def compute_c(l_smooth, w, epsilon, remove_outliers=True, remove_small=True, gradient_fn=None):
+    if gradient_fn is None:
+        gradient_fn = sobel_gradient
+    g = gradient_fn(l_smooth)
+    # g = prewitt_gradient(l_smooth)  # replaced by Sobel
     phi = retinex_contrast(l_smooth, w)
 
     rho = np.zeros_like(phi)

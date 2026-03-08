@@ -2,7 +2,7 @@
 Evaluation metrics for the SmartEdge sharpening filter.
 
 Implements the six metrics from the paper (Section III-C):
-  - Pm  : mean Prewitt gradient magnitude (edge strength)
+  - Pm  : mean Sobel gradient magnitude (edge strength)
   - mu  : no-reference sharpness metric (edge thickness, Crete et al.)
   - Lm  : mean luminance
   - NIQE: Natural Image Quality Evaluator
@@ -21,19 +21,30 @@ from prewitt_gradient import KX, KY
 
 
 # ---------------------------------------------------------------------------
-# Pm – mean Prewitt gradient magnitude (NOT normalised)
+# Pm – mean Sobel gradient magnitude (NOT normalised)
 # ---------------------------------------------------------------------------
 
-def prewitt_magnitude(luma):
-    """Return the raw (un-normalised) Prewitt gradient magnitude map."""
+def sobel_magnitude(luma):
+    """Return the raw (un-normalised) Sobel gradient magnitude map."""
     gx = conv2d(luma, KX)
     gy = conv2d(luma, KY)
     return np.maximum(np.abs(gx), np.abs(gy))
 
 
+# def prewitt_magnitude(luma):
+#     """Return the raw (un-normalised) Prewitt gradient magnitude map."""
+#     gx = conv2d(luma, KX)
+#     gy = conv2d(luma, KY)
+#     return np.maximum(np.abs(gx), np.abs(gy))
+
+
 def compute_pm(luma):
-    """Pm = mean of the raw Prewitt gradient magnitude over all pixels."""
-    return float(np.mean(prewitt_magnitude(luma)))
+    """Pm = mean of the raw Sobel gradient magnitude over all pixels."""
+    return float(np.mean(sobel_magnitude(luma)))
+
+# def compute_pm(luma):
+#     """Pm = mean of the raw Prewitt gradient magnitude over all pixels."""
+#     return float(np.mean(prewitt_magnitude(luma)))
 
 
 # ---------------------------------------------------------------------------

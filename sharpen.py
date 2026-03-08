@@ -15,6 +15,7 @@ def smartedge_sharpen(
     remove_small=True,
     adaptive=False,
     block_size=64,
+    gradient_fn=None,
 ):
     """
     Sharpen an image using the Gradient + Retinex-Inspired Contrast filter.
@@ -54,7 +55,7 @@ def smartedge_sharpen(
             h_unit = median_filter_3x3(h_unit)
         h = c_map * h_unit
     else:
-        c = compute_c(l_smooth, w, epsilon, remove_outliers, remove_small)
+        c = compute_c(l_smooth, w, epsilon, remove_outliers, remove_small, gradient_fn=gradient_fn)
         if c is None:
             return img.copy()
         kf = kernel_from_c(c)

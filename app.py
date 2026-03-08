@@ -9,6 +9,7 @@ from flask import Flask, render_template, request, jsonify
 from sharpen import smartedge_sharpen
 from metrics import evaluate
 from evaluate import EXPECTED, _arrow
+from prewitt_gradient import prewitt_gradient, scharr_gradient
 
 app = Flask(__name__)
 
@@ -86,6 +87,42 @@ def sharpen():
         after_adaptive = evaluate(sharpened_adaptive, reference=ref_bgr)
         response['sharpened_adaptive'] = _to_base64_png(sharpened_adaptive)
         response['metrics_adaptive'] = _make_rows(before, after_adaptive)
+
+    # ------------------------------------------------------------------
+    # 3-way gradient operator comparison: Sobel | Prewitt | Scharr
+    # ------------------------------------------------------------------
+
+    sharpened_prewitt = smartedge_sharpen(
+        bgr, w=w, alpha_mode=alpha_mode, gradient_fn=prewitt_gradient
+    )
+    sharpened_scharr = smartedge_sharpen(
+        bgr, w=w, alpha_mode=alpha_mode, gradient_fn=scharr_gradient
+    )
+    after_prewitt = evaluate(sharpened_prewitt, reference=ref_bgr)
+    after_scharr  = evaluate(sharpened_scharr,  reference=ref_bgr)
+
+    def _make_cmp_rows(s_dict, p_dict, sc_dict):
+        rows = []
+        for key in metric_keys:
+            if key not in s_dict:
+                continue
+            s  = s_dict[key]
+            p  = p_dict[key]
+            sc = sc_dict[key]
+            exp = EXPECTED.get(key, '↑')
+            best_val = max(s, p, sc) if exp == '↑' else min(s, p, sc)
+            tol = max(abs(best_val), 1e-9) * 0.0001
+
+            def _mark(v):
+                return 'best' if abs(v - best_val) <= tol else 'normal'
+
+            rows.append([key, f"{s:.4f}", f"{p:.4f}", f"{sc:.4f}",
+                         _mark(s), _mark(p), _mark(sc)])
+        return rows
+
+    response['sharpened_prewitt'] = _to_base64_png(sharpened_prewitt)
+    response['sharpened_scharr']  = _to_base64_png(sharpened_scharr)
+    response['metrics_cmp']       = _make_cmp_rows(after_global, after_prewitt, after_scharr)
 
     return jsonify(**response)
 

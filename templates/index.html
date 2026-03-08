@@ -13,7 +13,7 @@
       min-height: 100vh;
     }
     .container {
-      max-width: 820px;
+      max-width: 900px;
       margin: 0 auto;
       padding: 32px 20px;
     }
@@ -44,21 +44,9 @@
       color: #6b7280;
       margin-bottom: 16px;
     }
-    .upload-row {
-      display: flex;
-      gap: 16px;
-    }
-    .upload-box {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-    .upload-box label {
-      font-size: 0.85em;
-      font-weight: 500;
-      color: #374151;
-      margin-bottom: 6px;
-    }
+    .upload-row { display: flex; gap: 16px; }
+    .upload-box { flex: 1; display: flex; flex-direction: column; }
+    .upload-box label { font-size: 0.85em; font-weight: 500; color: #374151; margin-bottom: 6px; }
     .upload-box input[type="file"] {
       border: 2px dashed #d1d5db;
       border-radius: 8px;
@@ -69,29 +57,11 @@
       cursor: pointer;
       transition: border-color 0.2s;
     }
-    .upload-box input[type="file"]:hover {
-      border-color: #6366f1;
-    }
-    .params-row {
-      display: flex;
-      gap: 20px;
-      align-items: end;
-      margin-top: 18px;
-    }
-    .param-group {
-      display: flex;
-      flex-direction: column;
-    }
-    .param-group span {
-      font-size: 0.8em;
-      font-weight: 500;
-      color: #374151;
-      margin-bottom: 6px;
-    }
-    .radio-group {
-      display: flex;
-      gap: 4px;
-    }
+    .upload-box input[type="file"]:hover { border-color: #6366f1; }
+    .params-row { display: flex; gap: 20px; align-items: end; margin-top: 18px; }
+    .param-group { display: flex; flex-direction: column; }
+    .param-group span { font-size: 0.8em; font-weight: 500; color: #374151; margin-bottom: 6px; }
+    .radio-group { display: flex; gap: 4px; }
     .radio-group label {
       padding: 6px 16px;
       border: 1.5px solid #d1d5db;
@@ -103,11 +73,7 @@
       color: #374151;
     }
     .radio-group input { display: none; }
-    .radio-group input:checked + label {
-      background: #6366f1;
-      border-color: #6366f1;
-      color: #fff;
-    }
+    .radio-group input:checked + label { background: #6366f1; border-color: #6366f1; color: #fff; }
     .btn-sharpen {
       margin-left: auto;
       padding: 10px 32px;
@@ -122,15 +88,8 @@
     }
     .btn-sharpen:hover { background: #4f46e5; }
     .btn-sharpen:disabled { background: #a5b4fc; cursor: wait; }
-
-    .images-row {
-      display: flex;
-      gap: 16px;
-    }
-    .img-box {
-      flex: 1;
-      text-align: center;
-    }
+    .images-row { display: flex; gap: 16px; }
+    .img-box { flex: 1; text-align: center; }
     .img-box span {
       display: block;
       font-size: 0.8em;
@@ -146,12 +105,7 @@
       border: 1px solid #e5e7eb;
       background: #f9fafb;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 18px;
-      font-size: 0.9em;
-    }
+    table { width: 100%; border-collapse: collapse; margin-top: 18px; font-size: 0.9em; }
     th {
       text-align: left;
       padding: 10px 12px;
@@ -160,10 +114,7 @@
       color: #374151;
       border-bottom: 2px solid #e5e7eb;
     }
-    td {
-      padding: 9px 12px;
-      border-bottom: 1px solid #f0f0f0;
-    }
+    td { padding: 9px 12px; border-bottom: 1px solid #f0f0f0; }
     tr:last-child td { border-bottom: none; }
     .pass { color: #059669; font-weight: 600; }
     .fail { color: #dc2626; font-weight: 600; }
@@ -179,12 +130,47 @@
       margin-right: 6px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Operator comparison styles ── */
+    .divider {
+      border: none;
+      border-top: 2px dashed #e5e7eb;
+      margin: 8px 0 20px;
+    }
+    .section-heading {
+      font-size: 1em;
+      font-weight: 700;
+      color: #1a1a2e;
+      margin-bottom: 4px;
+    }
+    .section-sub {
+      font-size: 0.82em;
+      color: #6b7280;
+      margin-bottom: 16px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 4px;
+      font-size: 0.78em;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      color: #fff;
+      vertical-align: middle;
+    }
+    .badge-sobel   { background: #6366f1; }
+    .badge-prewitt { background: #f59e0b; }
+    .badge-scharr  { background: #10b981; }
+    .winner-row td { background: #f0fdf4; font-weight: 600; }
+    .winner-row-prewitt td { background: #fffbeb; font-weight: 600; }
+    .best-cell { background: #ecfdf5; font-weight: 700; }
+    .winner-mark { color: #059669; font-weight: 700; margin-left: 4px; }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>SmartEdge</h1>
-    <p class="subtitle">Image Sharpening via Gradient & Retinex-Inspired Contrast</p>
+    <p class="subtitle">Image Sharpening via Gradient &amp; Retinex-Inspired Contrast</p>
 
     <form id="form" enctype="multipart/form-data">
       <div class="card">
@@ -229,6 +215,8 @@
     </form>
 
     <div id="results" class="hidden">
+
+      <!-- ── Section 1: Sharpening results (Global / Adaptive) ── -->
       <div class="card">
         <div class="card-title">Result</div>
         <div class="images-row" id="imagesRow">
@@ -266,12 +254,58 @@
           <tbody id="metricsBodyAdaptive"></tbody>
         </table>
       </div>
-    </div>
+
+      <!-- ── Section 2: Sobel vs Prewitt operator comparison ── -->
+      <hr class="divider">
+
+      <div class="card">
+        <p class="section-heading">Gradient Operator Comparison</p>
+        <p class="section-sub">
+          Same image — same pipeline — only the gradient operator changes.
+          <span class="badge badge-sobel">Sobel</span> is the active operator in this project.
+        </p>
+
+        <div class="card-title">Output Comparison</div>
+        <div class="images-row">
+          <div class="img-box">
+            <span>Original</span>
+            <img id="imgCmpOriginal" src="" alt="Original">
+          </div>
+          <div class="img-box">
+            <span><span class="badge badge-sobel">Sobel</span> Sharpened</span>
+            <img id="imgSobelSharp" src="" alt="Sobel sharpened">
+          </div>
+          <div class="img-box">
+            <span><span class="badge badge-prewitt">Prewitt</span> Sharpened</span>
+            <img id="imgPrewittSharp" src="" alt="Prewitt sharpened">
+          </div>
+          <div class="img-box">
+            <span><span class="badge badge-scharr">Scharr</span> Sharpened</span>
+            <img id="imgScharrSharp" src="" alt="Scharr sharpened">
+          </div>
+        </div>
+
+        <div class="card-title" style="margin-top:24px;">Metrics Comparison</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th><span class="badge badge-sobel">Sobel</span></th>
+              <th><span class="badge badge-prewitt">Prewitt</span></th>
+              <th><span class="badge badge-scharr">Scharr</span></th>
+              <th>Best</th>
+            </tr>
+          </thead>
+          <tbody id="metricsCmpBody"></tbody>
+        </table>
+      </div>
+
+    </div><!-- /#results -->
   </div>
 
   <script>
     const form = document.getElementById('form');
-    const btn = document.getElementById('submitBtn');
+    const btn  = document.getElementById('submitBtn');
 
     function fillMetricsTable(tbodyId, rows) {
       const tbody = document.getElementById(tbodyId);
@@ -282,6 +316,31 @@
           <td><strong>${row[0]}</strong></td>
           <td>${row[1]}</td><td>${row[2]}</td><td>${row[3]}</td>
           <td>${row[4]}</td><td class="${cls}">${row[5]}</td>
+        </tr>`;
+      });
+    }
+
+    function fillCmpTable(rows) {
+      const tbody = document.getElementById('metricsCmpBody');
+      tbody.innerHTML = '';
+      // rows: [metric, sVal, pVal, scVal, sMark, pMark, scMark]
+      rows.forEach(([metric, sVal, pVal, scVal, sMark, pMark, scMark]) => {
+        const check = '<span class="winner-mark">&#10003;</span>';
+        const bestBadge = sMark === 'best'
+          ? '<span class="badge badge-sobel">Sobel</span>'
+          : (pMark === 'best'
+              ? '<span class="badge badge-prewitt">Prewitt</span>'
+              : '<span class="badge badge-scharr">Scharr</span>');
+        // if all three are 'best' (all equal)
+        const allEqual = sMark === 'best' && pMark === 'best' && scMark === 'best';
+        tbody.innerHTML += `<tr>
+          <td><strong>${metric}</strong></td>
+          <td class="${sMark  === 'best' ? 'best-cell' : ''}">${sVal}${ sMark  === 'best' && !allEqual ? check : ''}</td>
+          <td class="${pMark  === 'best' ? 'best-cell' : ''}">${pVal}${ pMark  === 'best' && !allEqual ? check : ''}</td>
+          <td class="${scMark === 'best' ? 'best-cell' : ''}">${scVal}${scMark === 'best' && !allEqual ? check : ''}</td>
+          <td>${allEqual
+            ? '<span style="color:#6b7280;font-size:0.85em;">— equal —</span>'
+            : bestBadge}</td>
         </tr>`;
       });
     }
@@ -299,8 +358,9 @@
         const data = await resp.json();
         if (data.error) { alert(data.error); return; }
 
+        // ── Section 1: sharpening results ──
         document.getElementById('imgBefore').src = 'data:image/png;base64,' + data.original;
-        document.getElementById('imgAfter').src = 'data:image/png;base64,' + data.sharpened;
+        document.getElementById('imgAfter').src  = 'data:image/png;base64,' + data.sharpened;
 
         if (isAdaptive && data.sharpened_adaptive) {
           document.getElementById('labelSharpened').textContent = 'Global (uniform c)';
@@ -315,8 +375,15 @@
           document.getElementById('metricsTitle').textContent = 'Evaluation Metrics';
           document.getElementById('metricsAdaptiveCard').classList.add('hidden');
         }
-
         fillMetricsTable('metricsBody', data.metrics);
+
+        // ── Section 2: Sobel vs Prewitt vs Scharr comparison ──
+        document.getElementById('imgCmpOriginal').src   = 'data:image/png;base64,' + data.original;
+        document.getElementById('imgSobelSharp').src    = 'data:image/png;base64,' + data.sharpened;
+        document.getElementById('imgPrewittSharp').src  = 'data:image/png;base64,' + data.sharpened_prewitt;
+        document.getElementById('imgScharrSharp').src   = 'data:image/png;base64,' + data.sharpened_scharr;
+        fillCmpTable(data.metrics_cmp);
+
         document.getElementById('results').classList.remove('hidden');
       } catch (err) {
         alert('Error: ' + err.message);
